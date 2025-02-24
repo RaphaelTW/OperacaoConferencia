@@ -7,7 +7,8 @@ export const styles = StyleSheet.create({
   },
 
   innerContainer: {
-    backgroundColor: '#f2f2f2'
+    flex: 1,
+    backgroundColor: 'transparent'
   },
 
   containerLogo: {
