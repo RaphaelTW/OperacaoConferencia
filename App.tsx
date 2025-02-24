@@ -1,8 +1,23 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, Image, Alert, TouchableOpacity, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Alert,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+  ScrollView,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard
+} from "react-native";
 import { launchCameraAsync, useCameraPermissions } from "expo-image-picker";
+import * as Animatable from "react-native-animatable";
 import * as MailComposer from "expo-mail-composer";
 import { Ionicons } from "@expo/vector-icons";
+import { styles } from "./src/components/style/home/styles";
 
 export default function App() {
   const [nomeFuncionario, setNomeFuncionario] = useState("");
@@ -25,19 +40,13 @@ export default function App() {
 
   const enviarEmail = async () => {
     if (!nomeFuncionario || !nomeCliente || !numeroCTE || !numeroPatrimonio || !image) {
-      Alert.alert("Erro", "Todos os campos são obrigatórios!");
+      Alert.alert("Erro", "Todos os campos e a foto são obrigatórios!");
       return;
     }
 
     const emailOptions = {
-      recipients: [
-        "raphael.tw22@gmail.com", 
-        "raphael.silva@viaexpressa.com", 
-        "robson.lima@viaexpressa.com", 
-        "brendon.vieira@viaexpressa.com",
-        "sidnei.oliveira@viaexpressa.com",
-      ],
-      subject: "Operação Conferência - Novo Registro",
+      recipients: ["raphael.tw22@gmail.com", "tecnologia@viaexpressa.com", "raphael.silva@viaexpressa.com",],
+      subject: `Operação Conferência - ${numeroCTE}`,
       body: `Nome do Funcionário: ${nomeFuncionario}\nNome do Cliente: ${nomeCliente}\nNúmero do CTE: ${numeroCTE}\nNúmero do Patrimônio: ${numeroPatrimonio}`,
       attachments: [image],
     };
@@ -56,88 +65,79 @@ export default function App() {
     }
   };
 
+  const logoSource = require("./src/assets/images/logo.png");
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>Nome do Funcionário:</Text>
-      <TextInput value={nomeFuncionario} onChangeText={setNomeFuncionario} style={styles.input} />
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={styles.container}
+      keyboardVerticalOffset={100} // Ajusta a posição ao abrir o teclado
+    >
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
+          <View style={styles.innerContainer}>
+            <View style={styles.containerLogo}>
+              <Animatable.Image
+                animation="flipInY"
+                source={logoSource}
+                style={styles.logoImage}
+                resizeMode="contain"
+              />
+            </View>
 
-      <Text style={styles.label}>Nome do Cliente:</Text>
-      <TextInput value={nomeCliente} onChangeText={setNomeCliente} style={styles.input} />
+            <Text style={styles.label}>Nome do Funcionário:</Text>
+            <TextInput
+              value={nomeFuncionario}
+              onChangeText={setNomeFuncionario}
+              style={styles.input}
+              placeholder="Digite o nome"
+            />
 
-      <Text style={styles.label}>Número do CTE:</Text>
-      <TextInput value={numeroCTE} onChangeText={setNumeroCTE} style={styles.input} keyboardType="numeric" />
+            <Text style={styles.label}>Nome do Cliente:</Text>
+            <TextInput
+              value={nomeCliente}
+              onChangeText={setNomeCliente}
+              style={styles.input}
+              placeholder="Digite o cliente"
+            />
 
-      <Text style={styles.label}>Número do Patrimônio:</Text>
-      <TextInput value={numeroPatrimonio} onChangeText={setNumeroPatrimonio} style={styles.input} keyboardType="numeric" />
+            <Text style={styles.label}>Número do CTE:</Text>
+            <TextInput
+              value={numeroCTE}
+              onChangeText={setNumeroCTE}
+              style={styles.input}
+              keyboardType="numeric"
+              placeholder="Digite o número"
+            />
 
-      <TouchableOpacity style={styles.button} onPress={tirarFoto}>
-        <Text style={styles.buttonText}>Tirar Foto</Text>
-      </TouchableOpacity>
-      
-      {image && (
-        <View style={styles.imageContainer}>
-          <Image source={{ uri: image }} style={styles.image} />
-          <TouchableOpacity onPress={() => setImage(null)} style={styles.trashButton}>
-            <Ionicons name="trash" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
-      )}
+            <Text style={styles.label}>Número do Patrimônio:</Text>
+            <TextInput
+              value={numeroPatrimonio}
+              onChangeText={setNumeroPatrimonio}
+              style={styles.input}
+              keyboardType="numeric"
+              placeholder="Digite o patrimônio"
+            />
 
-      <TouchableOpacity style={styles.button} onPress={enviarEmail}>
-        <Text style={styles.buttonText}>Enviar</Text>
-      </TouchableOpacity>
-    </View>
+            <TouchableOpacity style={styles.button} onPress={tirarFoto}>
+              <Text style={styles.buttonText}>Tirar Foto</Text>
+            </TouchableOpacity>
+
+            {image && (
+              <View style={styles.imageContainer}>
+                <Image source={{ uri: image }} style={styles.image} />
+                <TouchableOpacity onPress={() => setImage(null)} style={styles.trashButton}>
+                  <Ionicons name="trash" size={24} color="white" />
+                </TouchableOpacity>
+              </View>
+            )}
+
+            <TouchableOpacity style={styles.button} onPress={enviarEmail}>
+              <Text style={styles.buttonText}>Enviar</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f2f2f2",
-    padding: 20,
-    justifyContent: "center",
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    marginBottom: 15,
-    borderRadius: 5,
-    backgroundColor: "#fff",
-  },
-  button: {
-    backgroundColor: "#ff6600",
-    padding: 15,
-    borderRadius: 5,
-    alignItems: "center",
-    marginVertical: 10,
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  imageContainer: {
-    position: "relative",
-    alignItems: "center",
-    marginTop: 10,
-  },
-  image: {
-    width: 120,
-    height: 120,
-    borderRadius: 10,
-  },
-  trashButton: {
-    position: "absolute",
-    top: -10,
-    right: -10,
-    backgroundColor: "red",
-    borderRadius: 20,
-    padding: 5,
-  },
-});
