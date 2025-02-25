@@ -24,8 +24,12 @@ export default function App() {
   const [nomeCliente, setNomeCliente] = useState("");
   const [numeroCTE, setNumeroCTE] = useState("");
   const [numeroPatrimonio, setNumeroPatrimonio] = useState("");
+  
+  // Declare o estado apenas aqui, no topo do componente.
   const [image, setImage] = useState<string | null>(null);
+  
   const [permission, requestPermission] = useCameraPermissions();
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   const tirarFoto = async () => {
     if (!permission?.granted) {
@@ -34,6 +38,8 @@ export default function App() {
     }
     const result = await launchCameraAsync({ base64: true });
     if (!result.canceled) {
+      // Aqui você pode atribuir o URI da imagem sem problemas,
+      // pois o estado image está tipado para aceitar string ou null.
       setImage(result.assets[0].uri);
     }
   };
@@ -45,7 +51,11 @@ export default function App() {
     }
 
     const emailOptions = {
-      recipients: ["raphael.tw22@gmail.com", "tecnologia@viaexpressa.com", "raphael.silva@viaexpressa.com",],
+      recipients: [
+        "raphael.tw22@gmail.com",
+        "tecnologia@viaexpressa.com",
+        "raphael.silva@viaexpressa.com"
+      ],
       subject: `Operação Conferência - ${numeroCTE}`,
       body: `Nome do Funcionário: ${nomeFuncionario}\nNome do Cliente: ${nomeCliente}\nNúmero do CTE: ${numeroCTE}\nNúmero do Patrimônio: ${numeroPatrimonio}`,
       attachments: [image],
@@ -65,75 +75,115 @@ export default function App() {
     }
   };
 
-  const logoSource = require("./src/assets/images/logo.png");
+  // Define a logo com base no modo atual
+  const logoSource = isDarkMode
+    ? require("./src/assets/images/logo-white.png")
+    : require("./src/assets/images/logo.png");
+
+  // Cria estilos dinâmicos para suportar o modo escuro
+  const dynamicStyles = {
+    container: [styles.container, { backgroundColor: isDarkMode ? "#333" : "#f2f2f2" }],
+    innerContainer: styles.innerContainer,
+    containerLogo: [styles.containerLogo, { backgroundColor: isDarkMode ? "#333" : "#f2f2f2" }],
+    logoImage: styles.logoImage,
+    scrollContainer: styles.scrollContainer,
+    label: [styles.label, { color: isDarkMode ? "#fff" : "#000" }],
+    input: [
+      styles.input,
+      { backgroundColor: isDarkMode ? "#555" : "#fff", color: isDarkMode ? "#fff" : "#000" }
+    ],
+    imageContainer: styles.imageContainer,
+    image: styles.image,
+    trashButton: styles.trashButton,
+    button: [styles.button, { backgroundColor: isDarkMode ? "#888" : "#ff6600" }],
+    buttonText: [styles.buttonText, { color: isDarkMode ? "#000" : "#fff" }]
+  };
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}
+      style={dynamicStyles.container}
       keyboardVerticalOffset={0}
     >
+      <TouchableOpacity
+        style={localStyles.darkModeButton}
+        onPress={() => setIsDarkMode(!isDarkMode)}
+      >
+        <Ionicons
+          name={isDarkMode ? "sunny" : "moon"}
+          size={24}
+          color={isDarkMode ? "yellow" : "black"}
+        />
+      </TouchableOpacity>
+
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
-          <View style={styles.innerContainer}>
-            <View style={styles.containerLogo}>
+        <ScrollView
+          contentContainerStyle={dynamicStyles.scrollContainer}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={dynamicStyles.innerContainer}>
+            <View style={dynamicStyles.containerLogo}>
               <Animatable.Image
                 animation="flipInY"
                 source={logoSource}
-                style={styles.logoImage}
+                style={dynamicStyles.logoImage}
                 resizeMode="contain"
               />
             </View>
 
-            <Text style={styles.label}>Nome do Funcionário:</Text>
+            <Text style={dynamicStyles.label}>Nome do Funcionário:</Text>
             <TextInput
               value={nomeFuncionario}
               onChangeText={setNomeFuncionario}
-              style={styles.input}
+              style={dynamicStyles.input}
               placeholder="Digite o nome"
+              placeholderTextColor={isDarkMode ? "#ccc" : "#888"}
             />
 
-            <Text style={styles.label}>Nome do Cliente:</Text>
+            <Text style={dynamicStyles.label}>Nome do Cliente:</Text>
             <TextInput
               value={nomeCliente}
               onChangeText={setNomeCliente}
-              style={styles.input}
+              style={dynamicStyles.input}
               placeholder="Digite o cliente"
+              placeholderTextColor={isDarkMode ? "#ccc" : "#888"}
             />
 
-            <Text style={styles.label}>Número do CTE:</Text>
+            <Text style={dynamicStyles.label}>Número do CTE:</Text>
             <TextInput
               value={numeroCTE}
               onChangeText={setNumeroCTE}
-              style={styles.input}
+              style={dynamicStyles.input}
               keyboardType="numeric"
               placeholder="Digite o número"
+              placeholderTextColor={isDarkMode ? "#ccc" : "#888"}
             />
 
-            <Text style={styles.label}>Número do Patrimônio:</Text>
+            <Text style={dynamicStyles.label}>Número do Patrimônio:</Text>
             <TextInput
               value={numeroPatrimonio}
               onChangeText={setNumeroPatrimonio}
-              style={styles.input}
+              style={dynamicStyles.input}
               keyboardType="numeric"
               placeholder="Digite o patrimônio"
+              placeholderTextColor={isDarkMode ? "#ccc" : "#888"}
             />
 
-            <TouchableOpacity style={styles.button} onPress={tirarFoto}>
-              <Text style={styles.buttonText}>Tirar Foto</Text>
+            <TouchableOpacity style={dynamicStyles.button} onPress={tirarFoto}>
+              <Text style={dynamicStyles.buttonText}>Tirar Foto</Text>
             </TouchableOpacity>
 
             {image && (
-              <View style={styles.imageContainer}>
-                <Image source={{ uri: image }} style={styles.image} />
-                <TouchableOpacity onPress={() => setImage(null)} style={styles.trashButton}>
+              <View style={dynamicStyles.imageContainer}>
+                <Image source={{ uri: image }} style={dynamicStyles.image} />
+                <TouchableOpacity onPress={() => setImage(null)} style={dynamicStyles.trashButton}>
                   <Ionicons name="trash" size={24} color="white" />
                 </TouchableOpacity>
               </View>
             )}
 
-            <TouchableOpacity style={styles.button} onPress={enviarEmail}>
-              <Text style={styles.buttonText}>Enviar</Text>
+            <TouchableOpacity style={dynamicStyles.button} onPress={enviarEmail}>
+              <Text style={dynamicStyles.buttonText}>Enviar</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -141,3 +191,13 @@ export default function App() {
     </KeyboardAvoidingView>
   );
 }
+
+const localStyles = StyleSheet.create({
+  darkModeButton: {
+    position: "absolute",
+    top: Platform.OS === "ios" ? 50 : 30,
+    right: 20,
+    zIndex: 10,
+    backgroundColor: "transparent"
+  }
+});
