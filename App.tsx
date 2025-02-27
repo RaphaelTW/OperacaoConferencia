@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -17,6 +17,7 @@ import { launchCameraAsync, useCameraPermissions } from "expo-image-picker";
 import * as Animatable from "react-native-animatable";
 import * as MailComposer from "expo-mail-composer";
 import { Ionicons } from "@expo/vector-icons";
+import * as Updates from "expo-updates"; // Importação do expo-updates
 import { styles } from "./src/components/style/home/styles";
 
 export default function App() {
@@ -24,12 +25,26 @@ export default function App() {
   const [nomeCliente, setNomeCliente] = useState("");
   const [numeroCTE, setNumeroCTE] = useState("");
   const [numeroPatrimonio, setNumeroPatrimonio] = useState("");
-  
-  // Declare o estado apenas aqui, no topo do componente.
   const [image, setImage] = useState<string | null>(null);
-  
   const [permission, requestPermission] = useCameraPermissions();
   const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Verifica e aplica atualizações do EAS Update
+  useEffect(() => {
+    async function checkForUpdates() {
+      try {
+        const update = await Updates.checkForUpdateAsync();
+        if (update.isAvailable) {
+          await Updates.fetchUpdateAsync();
+          await Updates.reloadAsync();
+        }
+      } catch (error) {
+        console.log("Erro ao verificar atualização:", error);
+      }
+    }
+
+    checkForUpdates();
+  }, []);
 
   const tirarFoto = async () => {
     if (!permission?.granted) {
@@ -38,8 +53,6 @@ export default function App() {
     }
     const result = await launchCameraAsync({ base64: true });
     if (!result.canceled) {
-      // Aqui você pode atribuir o URI da imagem sem problemas,
-      // pois o estado image está tipado para aceitar string ou null.
       setImage(result.assets[0].uri);
     }
   };
@@ -53,7 +66,10 @@ export default function App() {
     const emailOptions = {
       recipients: [
         "raphael.tw22@gmail.com",
-        "tecnologia@viaexpressa.com",
+        "robson.lima@viaexpressa.com",
+        "brendon.vieira@viaexpressa.com",
+        "luccas.dantas@viaexpressa.com",
+        "sidnei.oliveira@viaexpressa.com",
         "raphael.silva@viaexpressa.com"
       ],
       subject: `Operação Conferência - ${numeroCTE}`,
