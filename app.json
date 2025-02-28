@@ -2,7 +2,7 @@
   "expo": {
     "name": "OperacaoConferencia",
     "slug": "OperacaoConferencia",
-    "version": "2.0.0",
+    "version": "3.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -12,14 +12,17 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "runtimeVersion": "3.0.0"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.raphael.tw22.OperacaoConferencia"
+      "versionCode": 14,
+      "package": "com.raphael.tw22.OperacaoConferencia",
+      "runtimeVersion": "3.0.0"
     },
     "web": {
       "favicon": "./assets/favicon.png"
