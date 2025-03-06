@@ -17,7 +17,7 @@ import { launchCameraAsync, useCameraPermissions } from "expo-image-picker";
 import * as Animatable from "react-native-animatable";
 import * as MailComposer from "expo-mail-composer";
 import { Ionicons } from "@expo/vector-icons";
-import * as Updates from "expo-updates"; // Importação do expo-updates
+import * as Updates from "expo-updates";
 import { styles } from "./src/components/style/home/styles";
 
 export default function App() {
@@ -29,7 +29,6 @@ export default function App() {
   const [permission, requestPermission] = useCameraPermissions();
   const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // Verifica e aplica atualizações do EAS Update
   useEffect(() => {
     async function checkForUpdates() {
       try {
@@ -91,12 +90,10 @@ export default function App() {
     }
   };
 
-  // Define a logo com base no modo atual
   const logoSource = isDarkMode
     ? require("./src/assets/images/logo-white.png")
     : require("./src/assets/images/logo.png");
 
-  // Cria estilos dinâmicos para suportar o modo escuro
   const dynamicStyles = {
     container: [styles.container, { backgroundColor: isDarkMode ? "#333" : "#f2f2f2" }],
     innerContainer: styles.innerContainer,
@@ -142,7 +139,7 @@ export default function App() {
               <Animatable.Image
                 animation="flipInY"
                 source={logoSource}
-                style={dynamicStyles.logoImage}
+                
                 resizeMode="contain"
               />
             </View>
@@ -191,7 +188,7 @@ export default function App() {
 
             {image && (
               <View style={dynamicStyles.imageContainer}>
-                <Image source={{ uri: image }} style={dynamicStyles.image} />
+                <Image source={{ uri: image }}  />
                 <TouchableOpacity onPress={() => setImage(null)} style={dynamicStyles.trashButton}>
                   <Ionicons name="trash" size={24} color="white" />
                 </TouchableOpacity>
