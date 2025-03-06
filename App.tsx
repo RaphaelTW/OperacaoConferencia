@@ -13,6 +13,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard
 } from "react-native";
+import Constants from "expo-constants"; // Para acessar a versão nativa
 import { launchCameraAsync, useCameraPermissions } from "expo-image-picker";
 import * as Animatable from "react-native-animatable";
 import * as MailComposer from "expo-mail-composer";
@@ -34,8 +35,29 @@ export default function App() {
       try {
         const update = await Updates.checkForUpdateAsync();
         if (update.isAvailable) {
-          await Updates.fetchUpdateAsync();
-          await Updates.reloadAsync();
+          Alert.alert(
+            'Nova atualização disponível!',
+            'Uma nova versão está disponível. Deseja atualizar agora?',
+            [
+              {
+                text: 'Cancelar',
+                style: 'cancel'
+              },
+              {
+                text: 'Atualizar',
+                onPress: async () => {
+                  try {
+                    await Updates.fetchUpdateAsync();
+                    Alert.alert('Atualização', 'Atualização baixada, reiniciando o app.');
+                    await Updates.reloadAsync();
+                  } catch (error) {
+                    console.log('Erro ao aplicar a atualização:', error);
+                  }
+                }
+              }
+            ],
+            { cancelable: false }
+          );
         }
       } catch (error) {
         console.log("Erro ao verificar atualização:", error);
@@ -43,6 +65,9 @@ export default function App() {
     }
 
     checkForUpdates();
+    // Caso deseje verificar periodicamente:
+    // const interval = setInterval(checkForUpdates, 300000);
+    // return () => clearInterval(interval);
   }, []);
 
   const tirarFoto = async () => {
@@ -112,6 +137,9 @@ export default function App() {
     buttonText: [styles.buttonText, { color: isDarkMode ? "#000" : "#fff" }]
   };
 
+  // Em builds standalone, utilize Constants.nativeAppVersion para capturar a versão
+  const appVersion = Constants.nativeAppVersion || "N/A";
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -139,7 +167,6 @@ export default function App() {
               <Animatable.Image
                 animation="flipInY"
                 source={logoSource}
-                
                 resizeMode="contain"
               />
             </View>
@@ -188,7 +215,7 @@ export default function App() {
 
             {image && (
               <View style={dynamicStyles.imageContainer}>
-                <Image source={{ uri: image }}  />
+                <Image source={{ uri: image }} />
                 <TouchableOpacity onPress={() => setImage(null)} style={dynamicStyles.trashButton}>
                   <Ionicons name="trash" size={24} color="white" />
                 </TouchableOpacity>
@@ -198,6 +225,12 @@ export default function App() {
             <TouchableOpacity style={dynamicStyles.button} onPress={enviarEmail}>
               <Text style={dynamicStyles.buttonText}>Enviar</Text>
             </TouchableOpacity>
+
+            <View style={{ marginTop: 20, alignItems: "center" }}>
+              <Text style={{ fontSize: 16, color: isDarkMode ? "#fff" : "#000" }}>
+                Versão: {appVersion}
+              </Text>
+            </View>
           </View>
         </ScrollView>
       </TouchableWithoutFeedback>

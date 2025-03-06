@@ -2,7 +2,7 @@
   "expo": {
     "name": "OperacaoConferencia",
     "slug": "OperacaoConferencia",
-    "version": "3.0.0",
+    "version": "3.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "runtimeVersion": "3.0.0"
+      "runtimeVersion": "1.0.0"
     },
     "android": {
       "adaptiveIcon": {
@@ -23,7 +23,7 @@
       },
       "versionCode": 14,
       "package": "com.raphael.tw22.OperacaoConferencia",
-      "runtimeVersion": "3.0.0"
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -37,7 +37,10 @@
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/97fab6a0-57c8-4f48-a9e3-db0f98212977"
+      "url": "https://u.expo.dev/97fab6a0-57c8-4f48-a9e3-db0f98212977",
+      "checkAutomatically": "NEVER",
+      "fallbackToCacheTimeout": 0
     }
   }
 }
+
